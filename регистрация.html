@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация - Hacker Login</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00FF00;
+            font-family: "Courier New", monospace;
+            overflow: hidden;
+        }
+        h1 {
+            text-align: center;
+            text-shadow: 0 0 10px #00FF00;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #00FF00;
+            background: black;
+            color: #00FF00;
+        }
+        button {
+            cursor: pointer;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+    <h1>HACKER LOGIN</h1>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Логин" required>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <button type="submit">Войти</button>
+    </form>
+
+    <script>
+        // Matrix animation
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+
+        const letters = Array(256).join("1").split("");
+        setInterval(function() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0F0";
+            letters.map(function(y_pos, index){
+                const text = String.fromCharCode(3e4 + Math.random() * 33);
+                const x_pos = index * 10;
+                ctx.fillText(text, x_pos, y_pos);
+                letters[index] = (y_pos > 758 + Math.random() * 1e4) ? 0 : y_pos + 10;
+            });
+        }, 50);
+
+        // Simple localStorage-based "Auth"
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const users = JSON.parse(localStorage.getItem('users')) || {};
+
+            if (users[username] && users[username] === password) {
+                window.location.href = 'Home.html';
+            } else {
+                alert('Ошибка авторизации!');
+            }
+        });
+    </script>
+</body>
+</html>
