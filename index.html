@@ -1,70 +1,135 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Matrix Black & White</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: black;
-            color: white;
-            font-family: monospace;
-        }
-        canvas {
-            display: block;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Awakened Syndicate</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      font-family: 'Courier New', Courier, monospace;
+      color: white;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      display: block;
+    }
+
+    .overlay {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding-top: 40px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px white;
+    }
+
+    .login-form {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px 30px;
+      border-radius: 10px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    .login-form input {
+      display: block;
+      width: 200px;
+      padding: 10px;
+      margin: 10px auto;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 1em;
+      text-align: center;
+    }
+
+    .login-form input::placeholder {
+      color: #ccc;
+    }
+
+    .login-form input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .login-form button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background: white;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .login-form button:hover {
+      background: #ddd;
+    }
+  </style>
 </head>
 <body>
-    <canvas id="matrix"></canvas>
+  <canvas id="matrix"></canvas>
 
-    <script>
-        const canvas = document.getElementById("matrix");
-        const ctx = canvas.getContext("2d");
+  <div class="overlay">
+    <h1>Awakened Syndicate</h1>
+    <div class="login-form">
+      <input type="text" placeholder="Логин">
+      <input type="password" placeholder="Пароль">
+      <button>Войти</button>
+    </div>
+  </div>
 
-        // Установка размера холста на весь экран
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
 
-        // Символы (можно заменить на любые другие)
-        const symbols = "0123456789".split("");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-        const fontSize = 16;
-        const columns = Math.floor(canvas.width / fontSize);
+    const symbols = "0123456789".split("");
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
 
-        // массив с вертикальной позицией для каждой колонки
-        const drops = Array(columns).fill(1);
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        function draw() {
-            // Прозрачный черный фон для затухания следа
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = fontSize + "px monospace";
 
-            ctx.fillStyle = "#FFFFFF"; // Белый цвет
-            ctx.font = fontSize + "px monospace";
+      for (let i = 0; i < drops.length; i++) {
+        const text = symbols[Math.floor(Math.random() * symbols.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-            for (let i = 0; i < drops.length; i++) {
-                const text = symbols[Math.floor(Math.random() * symbols.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                // вероятность сброса строки на верх
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-
-                drops[i]++;
-            }
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
         }
 
-        setInterval(draw, 50);
+        drops[i]++;
+      }
+    }
 
-        // адаптация под изменение размера окна
-        window.addEventListener("resize", () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-    </script>
+    setInterval(draw, 50);
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
 </body>
 </html>
