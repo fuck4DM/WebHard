@@ -2,13 +2,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title> AwakeningSindikat </title>
+    <title>AwakeningSindikat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
+        html, body {
             margin: 0;
-            overflow: hidden;
+            padding: 0;
+            background-color: #000;
+            color: #FFF;
             font-family: "Courier New", Courier, monospace;
-            color: #00FF00;
+            height: 100%;
+            overflow: hidden;
         }
         canvas {
             position: fixed;
@@ -25,69 +29,73 @@
             transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.8);
             padding: 30px;
-            border: 1px solid #00FF00;
+            border: 1px solid #FFF;
             text-align: center;
             border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
         }
         input, button {
-            width: 90%;
+            width: 100%;
             margin: 10px 0;
-            padding: 10px;
+            padding: 12px;
             background: #000;
-            color: #00FF00;
-            border: 1px solid #00FF00;
+            color: #FFF;
+            border: 1px solid #FFF;
+            font-size: 16px;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
         button {
-            background: #00FF00;
+            background: #FFF;
             color: #000;
+            font-weight: bold;
             cursor: pointer;
+            transition: background 0.3s;
         }
         button:hover {
-            background: #00cc00;
+            background: #ccc;
+        }
+        h1, p {
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <canvas id="matrix"></canvas>
     <div class="form-container">
-        <h1> AwakeningSindikat </h1>
-        <form>
-           
+        <h1>AwakeningSindikat</h1>
+        <form onsubmit="event.preventDefault(); alert('Access Granted!');">
             <input type="password" placeholder="OneCODE" required>
             <button type="submit">AwakSindi</button>
         </form>
-        <p>ConectingBASE!</p>
+        <p>ConnectingBASE...</p>
     </div>
 
     <script>
-        // Matrix Effect
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
 
-        const letters = Array(256).join("01").split("");
-        let fontSize = 10;
-        const columns = canvas.width / fontSize;
-
-        const drops = [];
-        for (let i = 0; i < columns; i++) {
-            drops[i] = 1;
-        }
+        const fontSize = 16;
+        const columns = Math.floor(width / fontSize);
+        const drops = Array(columns).fill(1);
+        const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
         function draw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.fillRect(0, 0, width, height);
 
-            ctx.fillStyle = "#0F0";
+            ctx.fillStyle = "#FFFFFF";
             ctx.font = fontSize + "px monospace";
 
             for (let i = 0; i < drops.length; i++) {
                 const text = letters[Math.floor(Math.random() * letters.length)];
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
                     drops[i] = 0;
                 }
                 drops[i]++;
@@ -95,6 +103,10 @@
         }
 
         setInterval(draw, 33);
+
+        window.addEventListener("resize", () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
     </script>
 </body>
-</html>
