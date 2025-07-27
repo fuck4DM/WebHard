@@ -1,113 +1,126 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>AwakeningSindikat</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            color: #FFF;
-            font-family: "Courier New", Courier, monospace;
-            height: 100%;
-            overflow: hidden;
-        }
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        .form-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 30px;
-            border: 1px solid #FFF;
-            text-align: center;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-        }
-        input, button {
-            width: 100%;
-            margin: 10px 0;
-            padding: 12px;
-            background: #000;
-            color: #FFF;
-            border: 1px solid #FFF;
-            font-size: 16px;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        button {
-            background: #FFF;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #ccc;
-        }
-        h1, p {
-            margin: 10px 0;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AwakeningSindikat</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: white;
+      font-family: "Courier New", Courier, monospace;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .form-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border: 1px solid white;
+      border-radius: 10px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background: black;
+      color: white;
+      border: 1px solid white;
+      font-size: 16px;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: white;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #ccc;
+    }
+
+    h1, p {
+      margin: 10px 0;
+    }
+  </style>
 </head>
 <body>
-    <canvas id="matrix"></canvas>
-    <div class="form-container">
-        <h1>AwakeningSindikat</h1>
-        <form onsubmit="event.preventDefault(); alert('Access Granted!');">
-            <input type="password" placeholder="OneCODE" required>
-            <button type="submit">AwakSindi</button>
-        </form>
-        <p>ConnectingBASE...</p>
-    </div>
+  <canvas id="matrix"></canvas>
+  <div class="form-container">
+    <h1>AwakeningSindikat</h1>
+    <form onsubmit="event.preventDefault(); alert('Access Granted!');">
+      <input type="password" placeholder="OneCODE" required />
+      <button type="submit">AwakSindi</button>
+    </form>
+    <p>ConnectingBASE...</p>
+  </div>
 
-    <script>
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
 
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+    // Устанавливаем размер
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-        const fontSize = 16;
-        const columns = Math.floor(width / fontSize);
-        const drops = Array(columns).fill(1);
-        const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = new Array(columns).fill(1);
 
-        function draw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-            ctx.fillRect(0, 0, width, height);
+    const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZабвгдеёжзийклмнопрстуфхцчшщ".split("");
 
-            ctx.fillStyle = "#FFFFFF";
-            ctx.font = fontSize + "px monospace";
+    function draw() {
+      // полупрозрачный чёрный фон (затухание следов)
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            for (let i = 0; i < drops.length; i++) {
-                const text = letters[Math.floor(Math.random() * letters.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      ctx.fillStyle = "#FFF"; // белые символы
+      ctx.font = fontSize + "px monospace";
 
-                if (drops[i] * fontSize > height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+
+        ctx.fillText(text, x, y);
+
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
         }
 
-        setInterval(draw, 33);
+        drops[i]++;
+      }
+    }
 
-        window.addEventListener("resize", () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        });
-    </script>
+    setInterval(draw, 33);
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
 </body>
 </html>
