@@ -2,19 +2,112 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Home - Хакерская система</title>
+    <title>AwakeningSindikat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            background-color: black;
-            color: #00FF00;
-            font-family: "Courier New", monospace;
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #FFF;
+            font-family: "Courier New", Courier, monospace;
+            height: 100%;
+            overflow: hidden;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .form-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border: 1px solid #FFF;
             text-align: center;
-            margin-top: 50px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+        }
+        input, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            background: #000;
+            color: #FFF;
+            border: 1px solid #FFF;
+            font-size: 16px;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #FFF;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #ccc;
+        }
+        h1, p {
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <h1>Добро пожаловать в систему!</h1>
-    <p>Доступ разрешён.</p>
+    <canvas id="matrix"></canvas>
+    <div class="form-container">
+        <h1>AwakeningSindikat</h1>
+        <form onsubmit="event.preventDefault(); alert('Access Granted!');">
+            <input type="password" placeholder="OneCODE" required>
+            <button type="submit">AwakSindi</button>
+        </form>
+        <p>ConnectingBASE...</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const fontSize = 16;
+        const columns = Math.floor(width / fontSize);
+        const drops = Array(columns).fill(1);
+        const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+        function draw() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 33);
+
+        window.addEventListener("resize", () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
