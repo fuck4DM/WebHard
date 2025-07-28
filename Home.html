@@ -1,76 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Matrix Effect</title>
+  <meta charset="UTF-8">
+  <title>AWAKENED Matrix</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: #ffffff; /* Белый фон */
+      background: black;
     }
+
     canvas {
       display: block;
-      background-color: #ffffff; /* Белый фон для холста */
     }
   </style>
 </head>
 <body>
-  <canvas id="matrix"></canvas>
+<canvas id="matrix"></canvas>
 
-  <script>
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
+<script>
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      ctx.font = fontSize + "px monospace";
-      charWidth = ctx.measureText("A").width;
-      columns = Math.floor(canvas.width / charWidth);
-      drops = Array(columns).fill(1);
-    }
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-    const fontSize = 16;
-    let charWidth;
-    let columns;
-    let drops;
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const fontSize = 16;
+  const columns = Math.floor(canvas.width / fontSize);
+  const drops = Array(columns).fill(1);
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-    resizeCanvas();
+  const hiddenText = "AWAKENED";
+  const hiddenCanvas = document.createElement("canvas");
+  const hiddenCtx = hiddenCanvas.getContext("2d");
 
-    function draw() {
-      ctx.fillStyle = "#ffffff"; // Белый фон
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.font = fontSize + "px monospace";
+  hiddenCanvas.width = canvas.width;
+  hiddenCanvas.height = canvas.height;
 
-      for (let i = 0; i < drops.length; i++) {
-        const x = i * charWidth;
-        const y = drops[i] * fontSize;
-        const char = chars[Math.floor(Math.random() * chars.length)];
+  const textFontSize = canvas.width * 0.04; // 40% по ширине
+  hiddenCtx.font = `bold ${textFontSize}px monospace`;
+  hiddenCtx.fillStyle = "#ffffff";
+  const textMetrics = hiddenCtx.measureText(hiddenText);
+  const textX = (canvas.width - textMetrics.width) / 2;
+  const textY = canvas.height / 2;
 
-        // Цвет: 10% красный, 20% зелёный, остальные чёрные
-        const rand = Math.random();
-        let color = "#000000"; // чёрный (на белом фоне)
-        if (rand < 0.1) color = "#ff0000";     // красный
-        else if (rand < 0.3) color = "#00aa00"; // зелёный
+  hiddenCtx.fillText(hiddenText, textX, textY);
 
-        ctx.fillStyle = color;
-        ctx.fillText(char, x, y);
+  function draw() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
+    ctx.font = fontSize + "px monospace";
 
-        drops[i]++;
+    for (let i = 0; i < drops.length; i++) {
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+
+      const char = chars[Math.floor(Math.random() * chars.length)];
+
+      const pixel = hiddenCtx.getImageData(x, y, 1, 1).data;
+      const isOnText = pixel[0] > 100;
+
+      ctx.fillStyle = isOnText ? "#ff0000" : "#00aaff";
+      ctx.fillText(char, x, y);
+
+      if (y > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
       }
+
+      drops[i]++;
     }
+  }
 
-    // Замедление движения на 30%
-    setInterval(draw, 21);
+  setInterval(draw, 50);
 
-    window.addEventListener("resize", resizeCanvas);
-  </script>
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    hiddenCanvas.width = canvas.width;
+    hiddenCanvas.height = canvas.height;
+
+    hiddenCtx.font = `bold ${canvas.width * 0.04}px monospace`;
+    const textMetrics = hiddenCtx.measureText(hiddenText);
+    const textX = (canvas.width - textMetrics.width) / 2;
+    const textY = canvas.height / 2;
+    hiddenCtx.clearRect(0, 0, canvas.width, canvas.height);
+    hiddenCtx.fillText(hiddenText, textX, textY);
+  });
+</script>
 </body>
 </html>
