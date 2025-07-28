@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AWAKENED Matrix</title>
+  <title>Matrix Rain with Glow</title>
   <style>
     html, body {
       margin: 0;
@@ -10,7 +10,6 @@
       overflow: hidden;
       background: black;
     }
-
     canvas {
       display: block;
     }
@@ -20,37 +19,21 @@
 <canvas id="matrix"></canvas>
 
 <script>
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
 
+  // Установка размера холста
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
   const fontSize = 16;
   const columns = Math.floor(canvas.width / fontSize);
   const drops = Array(columns).fill(1);
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-  const hiddenText = "AWAKENED";
-  const hiddenCanvas = document.createElement("canvas");
-  const hiddenCtx = hiddenCanvas.getContext("2d");
-
-  hiddenCanvas.width = canvas.width;
-  hiddenCanvas.height = canvas.height;
-
-  const textFontSize = canvas.width * 0.04; // 40% по ширине
-  hiddenCtx.font = `bold ${textFontSize}px monospace`;
-  hiddenCtx.fillStyle = "#ffffff";
-  const textMetrics = hiddenCtx.measureText(hiddenText);
-  const textX = (canvas.width - textMetrics.width) / 2;
-  const textY = canvas.height / 2;
-
-  hiddenCtx.fillText(hiddenText, textX, textY);
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   function draw() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     ctx.font = fontSize + "px monospace";
 
     for (let i = 0; i < drops.length; i++) {
@@ -59,10 +42,24 @@
 
       const char = chars[Math.floor(Math.random() * chars.length)];
 
-      const pixel = hiddenCtx.getImageData(x, y, 1, 1).data;
-      const isOnText = pixel[0] > 100;
+      // Определение цвета
+      let color = "#00ffff"; // голубой по умолчанию
+      const rand = Math.random();
+      if (rand < 0.1) color = "#ff0000"; // красный
+      else if (rand < 0.3) color = "#00ff00"; // зелёный
 
-      ctx.fillStyle = isOnText ? "#ff0000" : "#00aaff";
+      // Определение, попадает ли символ в нижние 5% страницы
+      const glowZone = canvas.height * 0.95;
+      const isGlowing = y >= glowZone;
+
+      if (isGlowing) {
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = color;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.fillStyle = color;
       ctx.fillText(char, x, y);
 
       if (y > canvas.height && Math.random() > 0.975) {
@@ -75,18 +72,10 @@
 
   setInterval(draw, 50);
 
+  // Перерисовка при изменении размера окна
   window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    hiddenCanvas.width = canvas.width;
-    hiddenCanvas.height = canvas.height;
-
-    hiddenCtx.font = `bold ${canvas.width * 0.04}px monospace`;
-    const textMetrics = hiddenCtx.measureText(hiddenText);
-    const textX = (canvas.width - textMetrics.width) / 2;
-    const textY = canvas.height / 2;
-    hiddenCtx.clearRect(0, 0, canvas.width, canvas.height);
-    hiddenCtx.fillText(hiddenText, textX, textY);
   });
 </script>
 </body>
