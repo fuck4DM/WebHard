@@ -1,88 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title></title>
+  <title>Crossed Swords Symbol</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: black;
+      background: white;
+      font-family: monospace;
     }
 
     canvas {
       display: block;
-      position: fixed;
-      top: 0;
-      left: 0;
     }
   </style>
 </head>
 <body>
-  <canvas id="matrix"></canvas>
-  <canvas id="textCanvas" style="display: none;"></canvas>
+<canvas id="matrix"></canvas>
 
-  <script>
-    const matrix = document.getElementById("matrix");
-    const textCanvas = document.getElementById("textCanvas");
-    const ctx = matrix.getContext("2d");
-    const textCtx = textCanvas.getContext("2d");
+<script>
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
 
-    matrix.width = textCanvas.width = window.innerWidth;
-    matrix.height = textCanvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-    const fontSize = 20;
-    const columns = Math.floor(matrix.width / fontSize);
-    const drops = Array(columns).fill(1);
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const fontSize = 16;
+  const columns = Math.floor(canvas.width / fontSize);
+  const drops = Array(columns).fill(1);
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    const hiddenText = "AWAKENED SYNDICATE";
-    const textX = textCanvas.width / 2;
-    const textY = textCanvas.height / 2;
+  // ASCII мечи
+  const swordLeft = [
+    "    |",
+    "    |",
+    "    |",
+    "   /|",
+    "  / |",
+    " /  |",
+    "/   |"
+  ];
 
-    function drawHiddenText() {
-      textCtx.clearRect(0, 0, textCanvas.width, textCanvas.height);
-      textCtx.font = "bold 120px Arial";
-      textCtx.textAlign = "center";
-      textCtx.fillStyle = "white"; // Белый текст на чёрном фоне
-      textCtx.fillText(hiddenText, textX, textY);
-    }
+  const swordRight = [
+    "     |",
+    "     |",
+    "     |",
+    "    |\\",
+    "    | \\",
+    "    |  \\",
+    "    |   \\"
+  ];
 
-    drawHiddenText();
-    const textData = textCtx.getImageData(0, 0, textCanvas.width, textCanvas.height).data;
+  const offsetY = Math.floor(canvas.height / fontSize / 2 - swordLeft.length / 2);
+  const centerX = Math.floor(columns / 2);
 
-    function drawMatrix() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; // Полупрозрачный чёрный для затухания следов
-      ctx.fillRect(0, 0, matrix.width, matrix.height);
-      ctx.font = fontSize + "px monospace";
+  function draw() {
+    ctx.fillStyle = "rgba(255,255,255,0.3)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      for (let i = 0; i < columns; i++) {
-        const char = chars.charAt(Math.floor(Math.random() * chars.length));
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
+    ctx.font = fontSize + "px monospace";
 
-        const pixelIndex = ((Math.floor(y) * textCanvas.width) + Math.floor(x)) * 4;
-        const isInText = textData[pixelIndex + 3] > 128;
+    for (let i = 0; i < drops.length; i++) {
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+      const char = chars[Math.floor(Math.random() * chars.length)];
 
-        ctx.fillStyle = isInText ? "red" : "white";
-        ctx.fillText(char, x, y);
+      let isOnSword = false;
 
-        if (y > matrix.height && Math.random() > 0.975) {
-          drops[i] = 0;
+      const row = Math.floor(drops[i]);
+      const col = i;
+
+      const relY = row - offsetY;
+
+      if (relY >= 0 && relY < swordLeft.length) {
+        const leftLine = swordLeft[relY];
+        const rightLine = swordRight[relY];
+
+        const leftStart = centerX - 4; // чуть влево
+        const rightStart = centerX + 1; // чуть вправо
+
+        const leftPos = col - leftStart;
+        const rightPos = col - rightStart;
+
+        if (leftPos >= 0 && leftPos < leftLine.length && leftLine[leftPos] !== " ") {
+          isOnSword = true;
         }
-
-        drops[i]++;
+        if (rightPos >= 0 && rightPos < rightLine.length && rightLine[rightPos] !== " ") {
+          isOnSword = true;
+        }
       }
+
+      if (isOnSword) {
+        const gradient = ctx.createLinearGradient(x, y, x + fontSize, y);
+        gradient.addColorStop(0, "#ff0000");
+        gradient.addColorStop(1, "#0000ff");
+        ctx.fillStyle = gradient;
+      } else {
+        ctx.fillStyle = "#000000";
+      }
+
+      ctx.fillText(char, x, y);
+
+      if (y > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+
+      drops[i]++;
     }
+  }
 
-    setInterval(drawMatrix, 50);
+  setInterval(draw, 50);
 
-    window.addEventListener("resize", () => {
-      matrix.width = textCanvas.width = window.innerWidth;
-      matrix.height = textCanvas.height = window.innerHeight;
-      drawHiddenText();
-    });
-  </script>
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
 </body>
-</html> 
+</html>
