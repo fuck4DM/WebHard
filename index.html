@@ -8,7 +8,7 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: white;
+      background: black;
     }
 
     canvas {
@@ -45,7 +45,7 @@
       textCtx.clearRect(0, 0, textCanvas.width, textCanvas.height);
       textCtx.font = "bold 120px Arial";
       textCtx.textAlign = "center";
-      textCtx.fillStyle = "black";
+      textCtx.fillStyle = "white"; // Белый текст на чёрном фоне
       textCtx.fillText(hiddenText, textX, textY);
     }
 
@@ -53,7 +53,7 @@
     const textData = textCtx.getImageData(0, 0, textCanvas.width, textCanvas.height).data;
 
     function drawMatrix() {
-      ctx.fillStyle = "rgba(255,255,255,0.05)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; // Полупрозрачный чёрный для затухания следов
       ctx.fillRect(0, 0, matrix.width, matrix.height);
       ctx.font = fontSize + "px monospace";
 
@@ -65,7 +65,7 @@
         const pixelIndex = ((Math.floor(y) * textCanvas.width) + Math.floor(x)) * 4;
         const isInText = textData[pixelIndex + 3] > 128;
 
-        ctx.fillStyle = isInText ? "red" : "black";
+        ctx.fillStyle = isInText ? "red" : "white";
         ctx.fillText(char, x, y);
 
         if (y > matrix.height && Math.random() > 0.975) {
