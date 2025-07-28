@@ -12,59 +12,98 @@
     }
 
     canvas {
+      display: block;
       position: fixed;
       top: 0;
       left: 0;
       z-index: 1;
     }
-
-    .logo {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 2;
-      max-width: 35%;
-      height: auto;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
-
-  <!-- ВСТРОЕННОЕ ИЗОБРАЖЕНИЕ -->
-  <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA+gAAAPICAYAAAB7p3iJAAAgAElEQVR4nOy9eZAk53nnf1e5ZduWWhVqRSZSC4X0sSgyZDJIqMwop0ixnKCGiR9R2JJK6ioDaQQW+ooEXUmAzpIuIqogCTkYUgCDqpKMzZVrRVaXb7vu9977z1bF3tVsz3l+yb+zd+fevcD7vZ9n93z6/61vvvvd9XmfZF2pVFIpFIJBKJRCKRSKRSCRSiUQiUUi3/4PXa8fa0uBDUAAAAASUVORK5CYII=" alt="Awakened Syndicate Logo">
+  <canvas id="logoCanvas"></canvas>
 
   <script>
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
+    const matrixCanvas = document.getElementById("matrix");
+    const matrixCtx = matrixCanvas.getContext("2d");
 
-    // Размеры
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const logoCanvas = document.getElementById("logoCanvas");
+    const logoCtx = logoCanvas.getContext("2d");
+
+    matrixCanvas.width = logoCanvas.width = window.innerWidth;
+    matrixCanvas.height = logoCanvas.height = window.innerHeight;
 
     const fontSize = 16;
-    const columns = Math.floor(canvas.width / fontSize);
+    const columns = Math.floor(matrixCanvas.width / fontSize);
     const drops = Array(columns).fill(1);
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    function draw() {
-      // Прозрачность 0.15 — для снижения интенсивности
-      ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Расположение логотипа
+    const logoImg = new Image();
+    logoImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA+gAAAPICAYAAAB7p3iJAAAgAElEQVR4nOy9eZAk53nnf1e5ZduWWhVqRSZSC4X0sSgyZDJIqMwop0ixnKCGiR9R2JJK6ioDaQQW+ooEXUmAzpIuIqogCTkYUgCDqpKMzZVrRVaXb7vu9977z1bF3tVsz3l+yb+zd+fevcD7vZ9n93z6/61vvvvd9XmfZF2pVFIpFIJBKJRCKRSKRSCRSiUQiUUi3/4PXa8fa0uBDUAAAAASUVORK5CYII=";
 
-      ctx.fillStyle = "#000000";
-      ctx.font = fontSize + "px monospace";
+    let logoX, logoY, logoWidth, logoHeight;
+
+    logoImg.onload = () => {
+      // Увеличим логотип в 2 раза и разместим по центру
+      logoWidth = logoImg.width * 0.5; // 200% от текущей ширины
+      logoHeight = logoImg.height * 0.5;
+      logoX = (logoCanvas.width - logoWidth) / 2;
+      logoY = (logoCanvas.height - logoHeight) / 2;
+
+      drawLogoGradient();
+    };
+
+    function drawLogoGradient(highlightX = -1, highlightY = -1) {
+      logoCtx.clearRect(0, 0, logoCanvas.width, logoCanvas.height);
+
+      // Рисуем логотип на отдельный слой
+      logoCtx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
+
+      // Создаём градиент
+      const gradient = logoCtx.createLinearGradient(logoX, logoY, logoX + logoWidth, logoY + logoHeight);
+      gradient.addColorStop(0, "red");
+      gradient.addColorStop(1, "blue");
+
+      // Меняем наложение
+      logoCtx.globalCompositeOperation = "source-in";
+      logoCtx.fillStyle = gradient;
+      logoCtx.fillRect(logoX, logoY, logoWidth, logoHeight);
+      logoCtx.globalCompositeOperation = "source-over";
+
+      // Если есть "касание" — создаём вспышку
+      if (highlightX >= logoX && highlightX <= logoX + logoWidth &&
+          highlightY >= logoY && highlightY <= logoY + logoHeight) {
+        const flashGrad = logoCtx.createRadialGradient(highlightX, highlightY, 10, highlightX, highlightY, 100);
+        flashGrad.addColorStop(0, "rgba(255,255,255,0.5)");
+        flashGrad.addColorStop(1, "rgba(255,255,255,0)");
+        logoCtx.fillStyle = flashGrad;
+        logoCtx.fillRect(logoX, logoY, logoWidth, logoHeight);
+      }
+    }
+
+    function drawMatrix() {
+      matrixCtx.fillStyle = "rgba(255, 255, 255, 0.15)";
+      matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+      matrixCtx.fillStyle = "#000000";
+      matrixCtx.font = fontSize + "px monospace";
 
       for (let i = 0; i < columns; i++) {
         const char = chars.charAt(Math.floor(Math.random() * chars.length));
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        ctx.fillText(char, x, y);
+        matrixCtx.fillText(char, x, y);
 
-        if (y > canvas.height && Math.random() > 0.975) {
+        // "Проверка на касание" логотипа
+        if (x >= logoX && x <= logoX + logoWidth &&
+            y >= logoY && y <= logoY + logoHeight) {
+          drawLogoGradient(x, y); // обновим логотип с эффектом "касания"
+        }
+
+        if (y > matrixCanvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
 
@@ -72,11 +111,11 @@
       }
     }
 
-    setInterval(draw, 50);
+    setInterval(drawMatrix, 50);
 
     window.addEventListener("resize", () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      matrixCanvas.width = logoCanvas.width = window.innerWidth;
+      matrixCanvas.height = logoCanvas.height = window.innerHeight;
     });
   </script>
 </body>
