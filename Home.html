@@ -1,70 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Matrix White</title>
+  <meta charset="UTF-8" />
+  <title>Matrix Effect</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: black;
+      background-color: #000000; /* Чёрный фон */
     }
     canvas {
       display: block;
+      background-color: #000000; /* Явно чёрный фон для холста */
     }
   </style>
 </head>
 <body>
-<canvas id="matrix"></canvas>
+  <canvas id="matrix"></canvas>
 
-<script>
-  const canvas = document.getElementById("matrix");
-  const ctx = canvas.getContext("2d");
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
 
-  // Установка размеров холста
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const fontSize = 16;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = Array(columns).fill(1);
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-  function draw() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = fontSize + "px monospace";
-
-    for (let i = 0; i < drops.length; i++) {
-      const x = i * fontSize;
-      const y = drops[i] * fontSize;
-      const char = chars[Math.floor(Math.random() * chars.length)];
-
-      // Выбор цвета: 10% красный, 20% зелёный, остальные белые
-      const rand = Math.random();
-      let color = "#ffffff"; // белый по умолчанию
-      if (rand < 0.1) color = "#ff0000"; // красный
-      else if (rand < 0.3) color = "#00ff00"; // зелёный
-
-      ctx.fillStyle = color;
-      ctx.fillText(char, x, y);
-
-      if (y > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
-
-      drops[i]++;
-    }
-  }
-
-  setInterval(draw, 50);
-
-  // Адаптация при изменении размеров окна
-  window.addEventListener("resize", () => {
+    // Установка размеров холста
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-  });
-</script>
+
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    function draw() {
+      // Закрашиваем чёрным — без прозрачности
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+        const char = chars[Math.floor(Math.random() * chars.length)];
+
+        // Цвет: 10% красный, 20% зелёный, остальные белые
+        const rand = Math.random();
+        let color = "#ffffff"; // белый
+        if (rand < 0.1) color = "#ff0000";     // красный
+        else if (rand < 0.3) color = "#00ff00"; // зелёный
+
+        ctx.fillStyle = color;
+        ctx.fillText(char, x, y);
+
+        // Перезапуск капли
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        drops[i]++;
+      }
+    }
+
+    // Запускаем с ускорением — примерно в 3 раза быстрее
+    setInterval(draw, 16);
+
+    // Автообновление размера холста при изменении окна
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
 </body>
 </html>
