@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title></title> <!-- Заголовок удалён -->
+  <title></title>
   <style>
     html, body {
       margin: 0;
@@ -12,56 +12,56 @@
     }
 
     canvas {
-      display: block;
       position: fixed;
       top: 0;
       left: 0;
       z-index: 1;
+    }
+
+    .logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      max-width: 35%;
+      height: auto;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
 
+  <!-- ВСТРОЕННОЕ ИЗОБРАЖЕНИЕ -->
+  <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA+gAAAPICAYAAAB7p3iJAAAgAElEQVR4nOy9eZAk53nnf1e5ZduWWhVqRSZSC4X0sSgyZDJIqMwop0ixnKCGiR9R2JJK6ioDaQQW+ooEXUmAzpIuIqogCTkYUgCDqpKMzZVrRVaXb7vu9977z1bF3tVsz3l+yb+zd+fevcD7vZ9n93z6/61vvvvd9XmfZF2pVFIpFIJBKJRCKRSKRSCRSiUQiUUi3/4PXa8fa0uBDUAAAAASUVORK5CYII=" alt="Awakened Syndicate Logo">
+
   <script>
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
 
+    // Размеры
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     const fontSize = 16;
-    const bigFontSize = fontSize * 2;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
-
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    const centerText = "AwakenedSyndicate";
-    const centerColsStart = Math.floor((canvas.width - centerText.length * bigFontSize) / 2);
-    const centerStartCol = Math.floor(centerColsStart / fontSize);
 
     function draw() {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+      // Прозрачность 0.15 — для снижения интенсивности
+      ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      ctx.fillStyle = "#000000";
+      ctx.font = fontSize + "px monospace";
+
       for (let i = 0; i < columns; i++) {
+        const char = chars.charAt(Math.floor(Math.random() * chars.length));
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        const textY = Math.floor(canvas.height / 2 / fontSize);
-
-        let char = chars.charAt(Math.floor(Math.random() * chars.length));
-        let color = "#000000";
-        let isCenterChar = false;
-
-        if (drops[i] === textY && i >= centerStartCol && i < centerStartCol + centerText.length) {
-          char = centerText[i - centerStartCol];
-          color = "#FF0000";
-          isCenterChar = true;
-        }
-
-        ctx.font = isCenterChar ? `${bigFontSize}px monospace` : `${fontSize}px monospace`;
-        ctx.fillStyle = color;
         ctx.fillText(char, x, y);
 
         if (y > canvas.height && Math.random() > 0.975) {
@@ -80,4 +80,4 @@
     });
   </script>
 </body>
-</html> 
+</html>
