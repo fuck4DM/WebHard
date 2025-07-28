@@ -8,9 +8,9 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: black;
+      background: white;
       font-family: 'Courier New', Courier, monospace;
-      color: white;
+      color: black;
     }
 
     canvas {
@@ -31,16 +31,16 @@
     h1 {
       font-size: 2.5em;
       margin-bottom: 30px;
-      text-shadow: 0 0 10px white;
+      text-shadow: 0 0 10px black;
     }
 
     .login-form {
       display: inline-block;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.05);
       padding: 20px 30px;
       border-radius: 10px;
       backdrop-filter: blur(4px);
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     }
 
     .login-form input {
@@ -48,28 +48,28 @@
       width: 200px;
       padding: 10px;
       margin: 10px auto;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.05);
       border: none;
       border-radius: 5px;
-      color: white;
+      color: black;
       font-size: 1em;
       text-align: center;
     }
 
     .login-form input::placeholder {
-      color: #ccc;
+      color: #444;
     }
 
     .login-form input:focus {
       outline: none;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.1);
     }
 
     .login-form button {
       padding: 10px 20px;
       margin-top: 10px;
-      background: white;
-      color: black;
+      background: black;
+      color: white;
       border: none;
       border-radius: 5px;
       font-weight: bold;
@@ -77,7 +77,7 @@
     }
 
     .login-form button:hover {
-      background: #ddd;
+      background: #333;
     }
   </style>
 </head>
@@ -106,10 +106,10 @@
     const drops = Array(columns).fill(1);
 
     function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "#FFFFFF";
+      ctx.fillStyle = "#000000";
       ctx.font = fontSize + "px monospace";
 
       for (let i = 0; i < drops.length; i++) {
