@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Crossed Swords Symbol</title>
+  <title>AWAKENED Matrix</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: white;
-      font-family: monospace;
+      background: black;
     }
 
     canvas {
@@ -21,8 +20,8 @@
 <canvas id="matrix"></canvas>
 
 <script>
-  const canvas = document.getElementById("matrix");
-  const ctx = canvas.getContext("2d");
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
 
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -30,34 +29,26 @@
   const fontSize = 16;
   const columns = Math.floor(canvas.width / fontSize);
   const drops = Array(columns).fill(1);
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-  // ASCII мечи
-  const swordLeft = [
-    "    |",
-    "    |",
-    "    |",
-    "   /|",
-    "  / |",
-    " /  |",
-    "/   |"
-  ];
+  const hiddenText = "AWAKENED";
+  const hiddenCanvas = document.createElement("canvas");
+  const hiddenCtx = hiddenCanvas.getContext("2d");
 
-  const swordRight = [
-    "     |",
-    "     |",
-    "     |",
-    "    |\\",
-    "    | \\",
-    "    |  \\",
-    "    |   \\"
-  ];
+  hiddenCanvas.width = canvas.width;
+  hiddenCanvas.height = canvas.height;
 
-  const offsetY = Math.floor(canvas.height / fontSize / 2 - swordLeft.length / 2);
-  const centerX = Math.floor(columns / 2);
+  const textFontSize = canvas.width * 0.04; // 40% по ширине
+  hiddenCtx.font = `bold ${textFontSize}px monospace`;
+  hiddenCtx.fillStyle = "#ffffff";
+  const textMetrics = hiddenCtx.measureText(hiddenText);
+  const textX = (canvas.width - textMetrics.width) / 2;
+  const textY = canvas.height / 2;
+
+  hiddenCtx.fillText(hiddenText, textX, textY);
 
   function draw() {
-    ctx.fillStyle = "rgba(255,255,255,0.3)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.font = fontSize + "px monospace";
@@ -65,42 +56,13 @@
     for (let i = 0; i < drops.length; i++) {
       const x = i * fontSize;
       const y = drops[i] * fontSize;
+
       const char = chars[Math.floor(Math.random() * chars.length)];
 
-      let isOnSword = false;
+      const pixel = hiddenCtx.getImageData(x, y, 1, 1).data;
+      const isOnText = pixel[0] > 100;
 
-      const row = Math.floor(drops[i]);
-      const col = i;
-
-      const relY = row - offsetY;
-
-      if (relY >= 0 && relY < swordLeft.length) {
-        const leftLine = swordLeft[relY];
-        const rightLine = swordRight[relY];
-
-        const leftStart = centerX - 4; // чуть влево
-        const rightStart = centerX + 1; // чуть вправо
-
-        const leftPos = col - leftStart;
-        const rightPos = col - rightStart;
-
-        if (leftPos >= 0 && leftPos < leftLine.length && leftLine[leftPos] !== " ") {
-          isOnSword = true;
-        }
-        if (rightPos >= 0 && rightPos < rightLine.length && rightLine[rightPos] !== " ") {
-          isOnSword = true;
-        }
-      }
-
-      if (isOnSword) {
-        const gradient = ctx.createLinearGradient(x, y, x + fontSize, y);
-        gradient.addColorStop(0, "#ff0000");
-        gradient.addColorStop(1, "#0000ff");
-        ctx.fillStyle = gradient;
-      } else {
-        ctx.fillStyle = "#000000";
-      }
-
+      ctx.fillStyle = isOnText ? "#ff0000" : "#00aaff";
       ctx.fillText(char, x, y);
 
       if (y > canvas.height && Math.random() > 0.975) {
@@ -116,6 +78,15 @@
   window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    hiddenCanvas.width = canvas.width;
+    hiddenCanvas.height = canvas.height;
+
+    hiddenCtx.font = `bold ${canvas.width * 0.04}px monospace`;
+    const textMetrics = hiddenCtx.measureText(hiddenText);
+    const textX = (canvas.width - textMetrics.width) / 2;
+    const textY = canvas.height / 2;
+    hiddenCtx.clearRect(0, 0, canvas.width, canvas.height);
+    hiddenCtx.fillText(hiddenText, textX, textY);
   });
 </script>
 </body>
