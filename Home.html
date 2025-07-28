@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Matrix Rain with Glow</title>
+  <title>Matrix White</title>
   <style>
     html, body {
       margin: 0;
@@ -22,7 +22,7 @@
   const canvas = document.getElementById("matrix");
   const ctx = canvas.getContext("2d");
 
-  // Установка размера холста
+  // Установка размеров холста
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
@@ -39,25 +39,13 @@
     for (let i = 0; i < drops.length; i++) {
       const x = i * fontSize;
       const y = drops[i] * fontSize;
-
       const char = chars[Math.floor(Math.random() * chars.length)];
 
-      // Определение цвета
-      let color = "#00ffff"; // голубой по умолчанию
+      // Выбор цвета: 10% красный, 20% зелёный, остальные белые
       const rand = Math.random();
+      let color = "#ffffff"; // белый по умолчанию
       if (rand < 0.1) color = "#ff0000"; // красный
       else if (rand < 0.3) color = "#00ff00"; // зелёный
-
-      // Определение, попадает ли символ в нижние 5% страницы
-      const glowZone = canvas.height * 0.95;
-      const isGlowing = y >= glowZone;
-
-      if (isGlowing) {
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = color;
-      } else {
-        ctx.shadowBlur = 0;
-      }
 
       ctx.fillStyle = color;
       ctx.fillText(char, x, y);
@@ -72,7 +60,7 @@
 
   setInterval(draw, 50);
 
-  // Перерисовка при изменении размера окна
+  // Адаптация при изменении размеров окна
   window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
