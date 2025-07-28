@@ -8,11 +8,11 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: #000000;
+      background-color: #ffffff; /* Белый фон */
     }
     canvas {
       display: block;
-      background-color: #000000;
+      background-color: #ffffff; /* Белый фон для холста */
     }
   </style>
 </head>
@@ -23,20 +23,25 @@
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
 
-    // Установка размеров холста
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      ctx.font = fontSize + "px monospace";
+      charWidth = ctx.measureText("A").width;
+      columns = Math.floor(canvas.width / charWidth);
+      drops = Array(columns).fill(1);
+    }
 
     const fontSize = 16;
-    ctx.font = fontSize + "px monospace";
-
-    const charWidth = ctx.measureText("A").width;
-    const columns = Math.floor(canvas.width / charWidth);
-    const drops = Array(columns).fill(1);
+    let charWidth;
+    let columns;
+    let drops;
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+    resizeCanvas();
+
     function draw() {
-      ctx.fillStyle = "#000000";
+      ctx.fillStyle = "#ffffff"; // Белый фон
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.font = fontSize + "px monospace";
 
@@ -45,11 +50,11 @@
         const y = drops[i] * fontSize;
         const char = chars[Math.floor(Math.random() * chars.length)];
 
-        // Цвет: 10% красный, 20% зелёный, остальные белые
+        // Цвет: 10% красный, 20% зелёный, остальные чёрные
         const rand = Math.random();
-        let color = "#ffffff"; // белый
+        let color = "#000000"; // чёрный (на белом фоне)
         if (rand < 0.1) color = "#ff0000";     // красный
-        else if (rand < 0.3) color = "#00ff00"; // зелёный
+        else if (rand < 0.3) color = "#00aa00"; // зелёный
 
         ctx.fillStyle = color;
         ctx.fillText(char, x, y);
@@ -62,12 +67,9 @@
       }
     }
 
-    setInterval(draw, 16); // Увеличенная скорость
+    setInterval(draw, 16); // Быстрая скорость (около 60 FPS)
 
-    window.addEventListener("resize", () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
+    window.addEventListener("resize", resizeCanvas);
   </script>
 </body>
 </html>
