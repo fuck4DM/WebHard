@@ -9,114 +9,63 @@
       padding: 0;
       overflow: hidden;
       background: white;
-      font-family: 'Courier New', Courier, monospace;
-      color: black;
     }
 
     canvas {
+      display: block;
       position: fixed;
       top: 0;
       left: 0;
-      z-index: -1;
-      display: block;
-    }
-
-    .overlay {
-      position: relative;
       z-index: 1;
-      text-align: center;
-      padding-top: 40px;
-    }
-
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px black;
-    }
-
-    .login-form {
-      display: inline-block;
-      background: rgba(0, 0, 0, 0.05);
-      padding: 20px 30px;
-      border-radius: 10px;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .login-form input {
-      display: block;
-      width: 200px;
-      padding: 10px;
-      margin: 10px auto;
-      background: rgba(0, 0, 0, 0.05);
-      border: none;
-      border-radius: 5px;
-      color: black;
-      font-size: 1em;
-      text-align: center;
-    }
-
-    .login-form input::placeholder {
-      color: #444;
-    }
-
-    .login-form input:focus {
-      outline: none;
-      background: rgba(0, 0, 0, 0.1);
-    }
-
-    .login-form button {
-      padding: 10px 20px;
-      margin-top: 10px;
-      background: black;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .login-form button:hover {
-      background: #333;
     }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
 
-  <div class="overlay">
-    <h1>Awakened Syndicate</h1>
-    <div class="login-form">
-      <input type="text" placeholder="Логин">
-      <input type="password" placeholder="Пароль">
-      <button>Войти</button>
-    </div>
-  </div>
-
   <script>
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
 
+    // Размеры холста
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const symbols = "0123456789".split("");
     const fontSize = 16;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
+    const chars = "0123456789";
+
+    // Текст в центре
+    const centerText = "AwakenedSyndicate";
+    const centerColsStart = Math.floor((columns - centerText.length) / 2);
 
     function draw() {
       ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "#000000";
       ctx.font = fontSize + "px monospace";
 
-      for (let i = 0; i < drops.length; i++) {
-        const text = symbols[Math.floor(Math.random() * symbols.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      for (let i = 0; i < columns; i++) {
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        // Определяем, должна ли быть буква из центра
+        let color = "#000000"; // чёрный по умолчанию
+        let char = chars[Math.floor(Math.random() * chars.length)];
+
+        const textRow = Math.floor(canvas.height / 2 / fontSize);
+
+        if (drops[i] === textRow && i >= centerColsStart && i < centerColsStart + centerText.length) {
+          char = centerText[i - centerColsStart];
+          color = "#FF0000"; // красный текст в центре
+        }
+
+        ctx.fillStyle = color;
+        ctx.fillText(char, x, y);
+
+        // Сброс капли
+        if (y > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
 
