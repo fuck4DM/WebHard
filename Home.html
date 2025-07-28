@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title></title>
@@ -8,7 +8,7 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: white;
+      background: black;
     }
 
     canvas {
@@ -21,7 +21,7 @@
 </head>
 <body>
   <canvas id="matrix"></canvas>
-  <canvas id="textCanvas"></canvas>
+  <canvas id="textCanvas" style="display: none;"></canvas>
 
   <script>
     const matrix = document.getElementById("matrix");
@@ -32,38 +32,40 @@
     matrix.width = textCanvas.width = window.innerWidth;
     matrix.height = textCanvas.height = window.innerHeight;
 
-    const fontSize = 16;
+    const fontSize = 20;
     const columns = Math.floor(matrix.width / fontSize);
     const drops = Array(columns).fill(1);
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    
-    // Нарисуем невидимую надпись
-    textCtx.font = "bold 60px Arial";
-    textCtx.textAlign = "center";
-    textCtx.fillStyle = "black";
-    const text = "AWAKENED SYNDICATE";
+
+    const hiddenText = "AWAKENED SYNDICATE";
     const textX = textCanvas.width / 2;
     const textY = textCanvas.height / 2;
-    textCtx.fillText(text, textX, textY);
 
-    // Получим пиксели текста
-    const textData = textCtx.getImageData(0, 0, textCanvas.width, textCanvas.height);
+    function drawHiddenText() {
+      textCtx.clearRect(0, 0, textCanvas.width, textCanvas.height);
+      textCtx.font = "bold 120px Arial";
+      textCtx.textAlign = "center";
+      textCtx.fillStyle = "white"; // Белый текст на чёрном фоне
+      textCtx.fillText(hiddenText, textX, textY);
+    }
+
+    drawHiddenText();
+    const textData = textCtx.getImageData(0, 0, textCanvas.width, textCanvas.height).data;
 
     function drawMatrix() {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; // Полупрозрачный чёрный для затухания следов
       ctx.fillRect(0, 0, matrix.width, matrix.height);
-
       ctx.font = fontSize + "px monospace";
 
       for (let i = 0; i < columns; i++) {
-        const char = chars[Math.floor(Math.random() * chars.length)];
+        const char = chars.charAt(Math.floor(Math.random() * chars.length));
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        const pixelIndex = ((Math.floor(y) * matrix.width) + Math.floor(x)) * 4;
-        const inText = textData.data[pixelIndex + 3] > 128;
+        const pixelIndex = ((Math.floor(y) * textCanvas.width) + Math.floor(x)) * 4;
+        const isInText = textData[pixelIndex + 3] > 128;
 
-        ctx.fillStyle = inText ? "red" : "black";
+        ctx.fillStyle = isInText ? "red" : "white";
         ctx.fillText(char, x, y);
 
         if (y > matrix.height && Math.random() > 0.975) {
@@ -79,11 +81,7 @@
     window.addEventListener("resize", () => {
       matrix.width = textCanvas.width = window.innerWidth;
       matrix.height = textCanvas.height = window.innerHeight;
-      textCtx.clearRect(0, 0, textCanvas.width, textCanvas.height);
-      textCtx.font = "bold 60px Arial";
-      textCtx.textAlign = "center";
-      textCtx.fillStyle = "black";
-      textCtx.fillText(text, textCanvas.width / 2, textCanvas.height / 2);
+      drawHiddenText();
     });
   </script>
 </body>
