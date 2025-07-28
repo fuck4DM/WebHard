@@ -8,11 +8,11 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: #000000; /* Чёрный фон */
+      background-color: #000000;
     }
     canvas {
       display: block;
-      background-color: #000000; /* Явно чёрный фон для холста */
+      background-color: #000000;
     }
   </style>
 </head>
@@ -28,18 +28,20 @@
     canvas.height = window.innerHeight;
 
     const fontSize = 16;
-    const columns = Math.floor(canvas.width / fontSize);
+    ctx.font = fontSize + "px monospace";
+
+    const charWidth = ctx.measureText("A").width;
+    const columns = Math.floor(canvas.width / charWidth);
     const drops = Array(columns).fill(1);
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     function draw() {
-      // Закрашиваем чёрным — без прозрачности
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.font = fontSize + "px monospace";
 
       for (let i = 0; i < drops.length; i++) {
-        const x = i * fontSize;
+        const x = i * charWidth;
         const y = drops[i] * fontSize;
         const char = chars[Math.floor(Math.random() * chars.length)];
 
@@ -52,7 +54,6 @@
         ctx.fillStyle = color;
         ctx.fillText(char, x, y);
 
-        // Перезапуск капли
         if (y > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
@@ -61,10 +62,8 @@
       }
     }
 
-    // Запускаем с ускорением — примерно в 3 раза быстрее
-    setInterval(draw, 16);
+    setInterval(draw, 16); // Увеличенная скорость
 
-    // Автообновление размера холста при изменении окна
     window.addEventListener("resize", () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
