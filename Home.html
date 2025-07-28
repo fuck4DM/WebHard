@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Awakened Syndicate</title>
+  <title></title> <!-- Заголовок удалён -->
   <style>
     html, body {
       margin: 0;
@@ -27,44 +27,43 @@
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
 
-    // Размеры холста
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     const fontSize = 16;
+    const bigFontSize = fontSize * 2;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
-    const chars = "0123456789";
 
-    // Текст в центре
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     const centerText = "AwakenedSyndicate";
-    const centerColsStart = Math.floor((columns - centerText.length) / 2);
+    const centerColsStart = Math.floor((canvas.width - centerText.length * bigFontSize) / 2);
+    const centerStartCol = Math.floor(centerColsStart / fontSize);
 
     function draw() {
       ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.font = fontSize + "px monospace";
-
       for (let i = 0; i < columns; i++) {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        // Определяем, должна ли быть буква из центра
-        let color = "#000000"; // чёрный по умолчанию
-        let char = chars[Math.floor(Math.random() * chars.length)];
+        const textY = Math.floor(canvas.height / 2 / fontSize);
 
-        const textRow = Math.floor(canvas.height / 2 / fontSize);
+        let char = chars.charAt(Math.floor(Math.random() * chars.length));
+        let color = "#000000";
+        let isCenterChar = false;
 
-        if (drops[i] === textRow && i >= centerColsStart && i < centerColsStart + centerText.length) {
-          char = centerText[i - centerColsStart];
-          color = "#FF0000"; // красный текст в центре
+        if (drops[i] === textY && i >= centerStartCol && i < centerStartCol + centerText.length) {
+          char = centerText[i - centerStartCol];
+          color = "#FF0000";
+          isCenterChar = true;
         }
 
+        ctx.font = isCenterChar ? `${bigFontSize}px monospace` : `${fontSize}px monospace`;
         ctx.fillStyle = color;
         ctx.fillText(char, x, y);
 
-        // Сброс капли
         if (y > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
