@@ -62,7 +62,7 @@
       const pixel = hiddenCtx.getImageData(x, y, 1, 1).data;
       const isOnText = pixel[0] > 100;
 
-      ctx.fillStyle = isOnText ? "#ff0000" : "#00aaff";
+      ctx.fillStyle = isOnText ? "#00ff00" : "#00ff00";
       ctx.fillText(char, x, y);
 
       if (y > canvas.height && Math.random() > 0.975) {
